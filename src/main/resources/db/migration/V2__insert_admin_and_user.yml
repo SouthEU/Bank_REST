@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: esternit
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: user
+              - column:
+                  name: password
+                  value: $argon2id$v=19$m=60000,t=10,p=1$5+8o7+EfRiVsoCgwZ+6nDw$3k3f1arGRnoab8W+vh1Xh0YSRXf0cpCO+tPnuYfiY/4
+              - column:
+                  name: first_name
+                  value: Иван
+              - column:
+                  name: last_name
+                  value: Петров
+              - column:
+                  name: email
+                  value: user@example.com
+              - column:
+                  name: phone
+                  value: +79991234567
+              - column:
+                  name: role
+                  value: USER
+              - column:
+                  name: is_active
+                  value: true
+
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: $argon2id$v=19$m=60000,t=10,p=1$5+8o7+EfRiVsoCgwZ+6nDw$3k3f1arGRnoab8W+vh1Xh0YSRXf0cpCO+tPnuYfiY/4
+              - column:
+                  name: first_name
+                  value: Алексей
+              - column:
+                  name: last_name
+                  value: Админов
+              - column:
+                  name: email
+                  value: admin@example.com
+              - column:
+                  name: phone
+                  value: +79999998877
+              - column:
+                  name: role
+                  value: ADMIN
+              - column:
+                  name: is_active
+                  value: true

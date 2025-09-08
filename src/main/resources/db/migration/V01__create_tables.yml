@@ -1,0 +1,258 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: esternit
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: VARCHAR(100)
+              - column:
+                  name: last_name
+                  type: VARCHAR(100)
+              - column:
+                  name: email
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: phone
+                  type: VARCHAR(20)
+              - column:
+                  name: role
+                  type: VARCHAR(20)
+                  constraints:
+                    nullable: false
+                  remarks: "USER or ADMIN"
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValue: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+              - column:
+                  name: username
+
+  - changeSet:
+      id: 2
+      author: esternit
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_number
+                  type: TEXT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: owner_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cards_owner
+                    referencedColumnNames: id
+                    referencedTableName: users
+              - column:
+                  name: expiration_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: DECIMAL(15, 2)
+                  defaultValue: 0.00
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: ACTIVE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 3
+      author: esternit
+      changes:
+        - createTable:
+            tableName: transfers
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: source_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: target_card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: DECIMAL(15, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: VARCHAR(3)
+                  defaultValue: RUB
+              - column:
+                  name: transfer_date
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+
+        - addForeignKeyConstraint:
+            constraintName: fk_transfers_source
+            baseTableName: transfers
+            baseColumnNames: source_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addForeignKeyConstraint:
+            constraintName: fk_transfers_target
+            baseTableName: transfers
+            baseColumnNames: target_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - createIndex:
+            tableName: transfers
+            columns:
+              - column:
+                  name: transfer_date
+              - column:
+                  name: source_card_id
+              - column:
+                  name: target_card_id
+
+  - changeSet:
+      id: 4
+      author: paatom
+      changes:
+        - createTable:
+            tableName: card_block_requests
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: card_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_block_card
+                    referencedColumnNames: id
+                    referencedTableName: cards
+              - column:
+                  name: requested_by
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_block_requested_by
+                    referencedColumnNames: id
+                    referencedTableName: users
+              - column:
+                  name: request_date
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: status
+                  type: VARCHAR(20)
+                  defaultValue: PENDING
+                  constraints:
+                    nullable: false
+              - column:
+                  name: processed_by
+                  type: BIGINT
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_block_processed_by
+                    referencedColumnNames: id
+                    referencedTableName: users
+              - column:
+                  name: processed_at
+                  type: TIMESTAMP WITH TIME ZONE
+
+        - createIndex:
+            tableName: card_block_requests
+            columns:
+              - column:
+                  name: card_id
+              - column:
+                  name: status
